@@ -6,29 +6,67 @@ Reading and Writing Data
 
 Today you'll learn how to use Ruby's I/O system—the tools Ruby gives you to read information in and send information out. By the end, you'll be able to open a CSV file, transform its data, and save the results again—like a mini data pipeline (ETL: Extract → Transform → Load).
 
+<!-- 
+1. Introduction to I/O in Ruby
+
+What Input/Output means in programming.
+
+The role of streams (STDIN, STDOUT, STDERR).
+
+Difference between console I/O and file I/O.
+ -->
+
 ## What Is I/O?
 
-I/O stands for Input/Output.
-
-Input is data coming into your program (like typing into the keyboard, or reading from a file).
-
-Output is data going out of your program (like printing to the screen, or saving to a file).
-
-Every computer program is basically about moving data in and out.
+I/O stands for Input/Output. *Input* is data coming into your program (like typing into the keyboard, or reading from a file). *Output* is data going out of your program (like printing to the screen, or saving to a file). Every computer program is basically about moving data in and out. Screens, keyboards, files, and networks are all forms of I/O. Data from these devices is sent to and from programs as a stream of characters/bytes. I/O is how your computer interacts with the world.
 
 <aside class="tip">
   Historically, early computers had no screens, only punch cards (input) and printed paper (output). Modern I/O feels fancier, but the idea is the same: get data, process it, return something useful.
 </aside>
 
+We've already learned some console I/O by reading user *input* using `gets` and logging *output* using `puts`, `print`, `p` and/or `pp`. In this lesson we'll dig deeper into file I/O.
+
 ## Why I/O Matters
 
-Without I/O, a program is like someone talking to themselves—you can't give it instructions, and you'll never see a result.
+Without I/O, a program is like someone talking to themselves, you can't give it instructions, and you'll never see a result.
 
 Learning I/O lets you:
 
 - Read data from files (like logs or spreadsheets).
 - Save results for later use.
-- Build tools that interact with real-world data.
+- Build tools that interact with real-world data and devices.
+
+### Everything is a File
+
+Unix-like systems (linux, macos, etc.) treat all external devices as files. We can see these under the `/dev` directory. Your keyboard? It's a special file. Your printer? Another file. I/O code in Ruby can work across different kinds of input/output.
+
+### Keylogger
+
+We can write ruby code that reads all the input from the keyboard by opening the `dev/tty` file.
+```ruby
+File.open("/dev/tty", "r") do |keyboard|
+  loop do
+    char = keyboard.getc
+    puts "Got key: #{char.inspect}"
+  end
+end
+```
+
+<aside class="tip">
+  "tty" stands for "teletypewriter". In early computing programs talked to users using "teletypes", basically typewriters connected to computers.
+</aside>
+
+<!-- 
+3. Working with Files
+
+Opening files with File.open and modes ("r", "w", "a", "r+").
+
+Reading files: read, readline, readlines, iteration with each_line.
+
+Writing files: write, puts, print.
+
+Closing files vs using blocks (File.open("file.txt", "r") do |f| ... end).
+ -->
 
 ## What Is a CSV?
 
@@ -105,6 +143,16 @@ File.open("log.txt", "a") do |file|
 end
 ```
 
+<!-- 
+4. File and Directory Operations
+
+File class methods (exist?, size, rename, delete).
+
+Dir class (entries, foreach, pwd, chdir).
+
+Using Pathname for cleaner path manipulation.
+ -->
+
 ## 4. File and Directory Tools
 
 Ruby has helpers to check on files and folders:
@@ -115,6 +163,16 @@ puts File.size("data.csv")     # file size in bytes
 puts Dir.pwd                   # current directory
 ```
 
+<!-- 
+5. Error Handling in I/O
+
+Common I/O exceptions (Errno::ENOENT, IOError).
+
+Using begin ... rescue ... ensure with file operations.
+
+Ensuring safe cleanup with ensure blocks.
+ -->
+
 <aside class="warning">
   Forgetting to close files can cause weird errors. Always use a block form (<code>File.open do |f| ... end</code>) to stay safe.
 </aside>
@@ -123,11 +181,11 @@ puts Dir.pwd                   # current directory
 
 So far we've hardcoded filenames like "data.csv". What if we want to pass a filename when we run the script?
 
-Ruby provides `ARGV` (argument vector), an array that stores values passed from the command line.
+Ruby provides `ARGV` (argument vector), an array that stores values passed from the command line. `ARGV[0]` captures first command-line argument after the ruby filename.
 
 ```ruby
-# filename: reader.rb
-filename = ARGV[0]    # first command-line argument
+# reader.rb
+filename = ARGV[0]
 puts "Reading from #{filename}..."
 
 File.open(filename, "r") do |file|
@@ -145,7 +203,7 @@ We can run the `reader.rb` script like this in the terminal:
 
 `ruby reader.rb example.txt`
 
-We'd get this output:
+We'll get this output:
 
 ```
 Reading from example.txt...
@@ -194,16 +252,25 @@ end
 ```
 
 <!-- 
-Practice Challenge
+6. Advanced I/O Techniques
 
-Modify the ETL script:
+Binary file handling (binmode, working with raw bytes).
 
-Add a new transformation: write names in lowercase.
+Temporary files with Tempfile.
 
-Write the transformed rows into a new CSV file called output.csv.
+Pipes and process I/O (IO.popen, backticks, system calls).
 
-Bonus: Let the user pass the output filename as the second argument (ARGV[1]).
+Redirection (STDIN.reopen, STDOUT.reopen).
 
+7. Best Practices
+
+Always close or use blocks for automatic cleanup.
+
+Be mindful of encoding (File.open("file.txt", "r:UTF-8")).
+
+Handle large files efficiently (reading line by line).
+
+Avoid insecure methods when dealing with user input.
 -->
 
 ## Wrap-Up
@@ -225,78 +292,13 @@ Bonus: Let the user pass the output filename as the second argument (ARGV[1]).
   - Not correct.
 {: .choose_best #argv_basics title="ARGV Basics" answer="2" }
 
-<!-- 
-1. Introduction to I/O in Ruby
+## Project: I/O
 
-What Input/Output means in programming.
+In this project, you will write Ruby programs that leverage these I/O objects. This project includes automated tests, so click this link to get started <https://github.com/dpi-tta-projects/ruby-io/fork>, fork the repository and create a codespace.
 
-The role of streams (STDIN, STDOUT, STDERR).
-
-Difference between console I/O and file I/O.
-
-2. Console Input and Output
-
-Printing to the console: puts, print, p.
-
-Reading from the console: gets, chomp, ARGV (command-line arguments).
-
-Practical examples (echo program, user prompts).
-
-3. Working with Files
-
-Opening files with File.open and modes ("r", "w", "a", "r+").
-
-Reading files: read, readline, readlines, iteration with each_line.
-
-Writing files: write, puts, print.
-
-Closing files vs using blocks (File.open("file.txt", "r") do |f| ... end).
-
-4. File and Directory Operations
-
-File class methods (exist?, size, rename, delete).
-
-Dir class (entries, foreach, pwd, chdir).
-
-Using Pathname for cleaner path manipulation.
-
-5. Error Handling in I/O
-
-Common I/O exceptions (Errno::ENOENT, IOError).
-
-Using begin ... rescue ... ensure with file operations.
-
-Ensuring safe cleanup with ensure blocks.
-
-6. Advanced I/O Techniques
-
-Binary file handling (binmode, working with raw bytes).
-
-Temporary files with Tempfile.
-
-Pipes and process I/O (IO.popen, backticks, system calls).
-
-Redirection (STDIN.reopen, STDOUT.reopen).
-
-7. Best Practices
-
-Always close or use blocks for automatic cleanup.
-
-Be mindful of encoding (File.open("file.txt", "r:UTF-8")).
-
-Handle large files efficiently (reading line by line).
-
-Avoid insecure methods when dealing with user input.
-
-8. Hands-On Exercises
-
-Write a script that reads a file and prints line numbers.
-
-Create a log writer that appends to a file with timestamps.
-
-Parse command-line arguments and interactively read from STDIN.
-
- -->
+<aside class="warning">
+  In order to get credit for completing this project you'll need to open the assignment link from canvas to generate an access token.
+</aside>
 
 ## References
 
