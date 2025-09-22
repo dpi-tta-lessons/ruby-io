@@ -6,15 +6,7 @@ Reading and Writing Data
 
 Today you'll learn how to use Ruby's I/O system—the tools Ruby gives you to read information in and send information out. By the end, you'll be able to open a CSV file, transform its data, and save the results again—like a mini data pipeline (ETL: Extract → Transform → Load).
 
-<!-- 
-1. Introduction to I/O in Ruby
-
-What Input/Output means in programming.
-
-The role of streams (STDIN, STDOUT, STDERR).
-
-Difference between console I/O and file I/O.
- -->
+<!-- TODO: The role of streams (STDIN, STDOUT, STDERR). -->
 
 ## What Is I/O?
 
@@ -55,18 +47,6 @@ end
 <aside class="tip">
   "tty" stands for "teletypewriter". In early computing programs talked to users using "teletypes", basically typewriters connected to computers.
 </aside>
-
-<!-- 
-3. Working with Files
-
-Opening files with File.open and modes ("r", "w", "a", "r+").
-
-Reading files: read, readline, readlines, iteration with each_line.
-
-Writing files: write, puts, print.
-
-Closing files vs using blocks (File.open("file.txt", "r") do |f| ... end).
- -->
 
 ## What Is a CSV?
 
