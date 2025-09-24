@@ -4,16 +4,14 @@ Reading and Writing Data
 
 ## Goal
 
-Today you'll learn how to use Ruby's I/O system—the tools Ruby gives you to read information in and send information out. By the end, you'll be able to open a CSV file, transform its data, and save the results again—like a mini data pipeline (ETL: Extract → Transform → Load).
-
-<!-- TODO: The role of streams (STDIN, STDOUT, STDERR). -->
+Today you'll learn how to use Ruby's I/O system, the tools Ruby gives you to read information in and send information out. By the end, you'll be able to open a CSV file, transform its data, and save the results again. We call these types of data pipelines ETL (Extract → Transform → Load).
 
 ## What Is I/O?
 
-I/O stands for Input/Output. *Input* is data coming into your program (like typing into the keyboard, or reading from a file). *Output* is data going out of your program (like printing to the screen, or saving to a file). Every computer program is basically about moving data in and out. Screens, keyboards, files, and networks are all forms of I/O. Data from these devices is sent to and from programs as a stream of characters/bytes. I/O is how your computer interacts with the world.
+I/O stands for **I**nput/**O**utput. *Input* is data coming into your program (like typing into the keyboard, or reading from a file). *Output* is data going out of your program (like printing to the screen, or saving to a file). Every computer program is basically about moving data in and out. Screens, keyboards, files, and networks are all forms of I/O. Data from these devices is sent to and from programs as a stream of characters/bytes. Essentially, I/O is how your computer interacts with the world.
 
 <aside class="tip">
-  Historically, early computers had no screens, only punch cards (input) and printed paper (output). Modern I/O feels fancier, but the idea is the same: get data, process it, return something useful.
+  Historically, early computers had no screens, only punch cards (input) and printed paper (output). Modern I/O feels fancier, but the idea is the same: get data in, process it, return something useful.
 </aside>
 
 We've already learned some console I/O by reading user *input* using `gets` and logging *output* using `puts`, `print`, `p` and/or `pp`. In this lesson we'll dig deeper into file I/O.
@@ -27,26 +25,6 @@ Learning I/O lets you:
 - Read data from files (like logs or spreadsheets).
 - Save results for later use.
 - Build tools that interact with real-world data and devices.
-
-### Everything is a File
-
-Unix-like systems (linux, macos, etc.) treat all external devices as files. We can see these under the `/dev` directory. Your keyboard? It's a special file. Your printer? Another file. I/O code in Ruby can work across different kinds of input/output.
-
-### Keylogger
-
-We can write ruby code that reads all the input from the keyboard by opening the `dev/tty` file.
-```ruby
-File.open("/dev/tty", "r") do |keyboard|
-  loop do
-    char = keyboard.getc
-    puts "Got key: #{char.inspect}"
-  end
-end
-```
-
-<aside class="tip">
-  "tty" stands for "teletypewriter". In early computing programs talked to users using "teletypes", basically typewriters connected to computers.
-</aside>
 
 ## What Is a CSV?
 
@@ -90,7 +68,7 @@ This script extracts data from a CSV file, transforms the age, and loads it to t
 Ruby uses an [IO class](https://docs.ruby-lang.org/en/master/IO.html) to handle input/output, think of it as a stream of data. [File](https://docs.ruby-lang.org/en/master/File.html) is a subclass of `IO`, so everything you do with files uses the same foundation Ruby uses for console input and output.
 
 <aside class="tip">
-  If <code>puts</code> and <code>gets</code> feel familiar, that's because they are shorthand for working with Ruby's `STDOUT` (output stream) and `STDIN` (input stream).
+  <code>puts</code> and <code>gets</code> are shorthand for working with Ruby's `STDOUT` (output stream) and `STDIN` (input stream).
 </aside>
 
 ## 2. Reading a File
@@ -105,10 +83,14 @@ File.open("example.txt", "r") do |file|
 end
 ```
 
+<aside class="warning">
+  Forgetting to close files can cause weird errors. Always use a block form (<code>File.open do |f| ... end</code>) to stay safe.
+</aside>
+
 ### Why this works
 
 - `"r"` means "read mode."
-- `file.each_line` loops through each line without loading the entire file into memory.
+- `file.each_line` loops through each line without loading the entire file into memory. Handle large files efficiently by reading line by line.
 
 ## 3. Writing to a File
 
@@ -123,25 +105,21 @@ File.open("log.txt", "a") do |file|
 end
 ```
 
-<!-- 
-4. File and Directory Operations
-
-File class methods (exist?, size, rename, delete).
-
-Dir class (entries, foreach, pwd, chdir).
-
-Using Pathname for cleaner path manipulation.
- -->
-
 ## 4. File and Directory Tools
 
-Ruby has helpers to check on files and folders:
+Ruby has helpers to check on files:
 
-```ruby
-puts File.exist?("data.csv")   # true or false
-puts File.size("data.csv")     # file size in bytes
-puts Dir.pwd                   # current directory
-```
+- [`File.exist?("data.csv")`](https://docs.ruby-lang.org/en/master/File.html#method-c-exist-3F): Check if file exists.
+- [`File.size("data.csv")`](https://docs.ruby-lang.org/en/master/File.html#method-c-size): File size in bytes.
+- [`File.rename("data.csv", "new_name.csv")`](https://docs.ruby-lang.org/en/master/File.html#method-c-rename): Renames the given file to the new name.
+- [`File.delete("data.csv")`](https://docs.ruby-lang.org/en/master/File.html#method-c-unlink): Deletes the named files.
+
+and folders:
+
+- [`Dir.entries`](https://docs.ruby-lang.org/en/master/Dir.html#method-c-entries): Returns an array of the entry names in the directory
+- [`Dir.foreach`](https://docs.ruby-lang.org/en/master/Dir.html#method-c-foreach): Calls the block with each entry name in the directory
+- [`Dir.pwd`](https://docs.ruby-lang.org/en/master/Dir.html#method-c-pwd): Returns the path to the current working directory
+- [`Dir.chdir`](https://docs.ruby-lang.org/en/master/Dir.html#method-c-chdir): Changes the current working directory.
 
 <!-- 
 5. Error Handling in I/O
@@ -153,15 +131,11 @@ Using begin ... rescue ... ensure with file operations.
 Ensuring safe cleanup with ensure blocks.
  -->
 
-<aside class="warning">
-  Forgetting to close files can cause weird errors. Always use a block form (<code>File.open do |f| ... end</code>) to stay safe.
-</aside>
-
 ## 5. Using ARGV for Command-Line Arguments
 
 So far we've hardcoded filenames like "data.csv". What if we want to pass a filename when we run the script?
 
-Ruby provides `ARGV` (argument vector), an array that stores values passed from the command line. `ARGV[0]` captures first command-line argument after the ruby filename.
+Ruby provides [`ARGV`](https://docs.ruby-lang.org/en/master/ARGF.html) (argument vector), an array that stores values passed from the command line. `ARGV[0]` captures first command-line argument after the ruby filename.
 
 ```ruby
 # reader.rb
@@ -231,27 +205,25 @@ CSV.foreach(filename, headers: true) do |row|
 end
 ```
 
-<!-- 
-6. Advanced I/O Techniques
+## Everything is a File
 
-Binary file handling (binmode, working with raw bytes).
+Unix-like systems (linux, macos, etc.) treat all external devices as files. We can see these under the `/dev` directory. Your keyboard? It's a special file. Your printer? Another file. I/O code in Ruby can work across different kinds of input/output.
 
-Temporary files with Tempfile.
+### Keylogger
 
-Pipes and process I/O (IO.popen, backticks, system calls).
+We can write ruby code that reads all the input from the keyboard by opening the `dev/tty` file.
+```ruby
+File.open("/dev/tty", "r") do |keyboard|
+  loop do
+    char = keyboard.getc
+    puts "Got key: #{char.inspect}"
+  end
+end
+```
 
-Redirection (STDIN.reopen, STDOUT.reopen).
-
-7. Best Practices
-
-Always close or use blocks for automatic cleanup.
-
-Be mindful of encoding (File.open("file.txt", "r:UTF-8")).
-
-Handle large files efficiently (reading line by line).
-
-Avoid insecure methods when dealing with user input.
--->
+<aside class="tip">
+  "tty" stands for "teletypewriter". In early computing programs talked to users using "teletypes", basically typewriters connected to computers.
+</aside>
 
 ## Wrap-Up
 
@@ -283,3 +255,5 @@ In this project, you will write Ruby programs that leverage these I/O objects. T
 ## References
 
 - [IO in Ruby](https://thoughtbot.com/blog/io-in-ruby)
+
+<!-- TODO: The role of streams (STDIN, STDOUT, STDERR). -->
