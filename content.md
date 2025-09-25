@@ -59,7 +59,6 @@ CSV.foreach("data.csv", headers: true) do |row|
   puts "Name: #{row['name']}, Age doubled: #{row['age'].to_i * 2}"
 end
 ```
-{: .repl }
 
 This script extracts data from a CSV file, transforms the age, and loads it to the console.
 
@@ -257,3 +256,6 @@ In this project, you will write Ruby programs that leverage these I/O objects. T
 - [IO in Ruby](https://thoughtbot.com/blog/io-in-ruby)
 
 <!-- TODO: The role of streams (STDIN, STDOUT, STDERR). -->
+<!-- TODO: Rescue Errno::ENOENT and handle gracefully -->
+<!-- TODO: OptionParser -->
+<!-- TODO: Guarding input -->
