@@ -137,7 +137,6 @@ So far we've hardcoded filenames like "data.csv". What if we want to pass a file
 Ruby provides [`ARGV`](https://docs.ruby-lang.org/en/master/ARGF.html) (argument vector), an array that stores values passed from the command line. `ARGV[0]` captures first command-line argument after the ruby filename.
 
 ```ruby
-# reader.rb
 filename = ARGV[0]
 puts "Reading from #{filename}..."
 
@@ -178,7 +177,7 @@ Ruby's standard library has a built-in [CSV class](https://ruby.github.io/csv/).
 ```ruby
 require "csv"
 
-filename = ARGV[0] || "data.csv"  # default if no argument
+filename = ARGV[0]
 CSV.foreach(filename, headers: true) do |row|
   puts row.inspect
 end
@@ -192,14 +191,18 @@ end
 
 Now let's extract, transform, and load data (ETL).
 
+<!-- TODO: add note that each row is a hash -->
+<!-- TODO: add note that we need to convert string to integer -->
+<!-- TODO: add example of what the input csv looks like -->
+
 ```ruby
 require "csv"
 
-filename = ARGV[0] || "data.csv"
+filename = ARGV[0]
 
 CSV.foreach(filename, headers: true) do |row|
-  name = row["name"]
-  age = row["age"].to_i
+  name = row.fetch("name")
+  age = row.fetch("age").to_i
   puts "#{name.upcase} will be #{age + 10} years old in 10 years."
 end
 ```
