@@ -6,6 +6,10 @@ Reading and Writing Data
 
 Today you'll learn how to use Ruby's I/O system, the tools Ruby gives you to read information in and send information out. By the end, you'll be able to open a CSV file, transform its data, and save the results again. We call these types of data pipelines ETL (Extract → Transform → Load).
 
+<div class="alert alert-info">
+  <a href="https://youtu.be/xFldvvsehTU" target="_blank">Video</a>
+</div>
+
 ## What Is I/O?
 
 I/O stands for **I**nput/**O**utput. *Input* is data coming into your program (like typing into the keyboard, or reading from a file). *Output* is data going out of your program (like printing to the screen, or saving to a file). Every computer program is basically about moving data in and out. Screens, keyboards, files, and networks are all forms of I/O. Data from these devices is sent to and from programs as a stream of characters/bytes. Essentially, I/O is how your computer interacts with the world.
@@ -52,30 +56,39 @@ This is a common pattern in data engineering and analytics. You'll try a mini-ve
 
 Here's a sneak peek at the kind of program you'll write.
 
+<!-- TODO: sample csv file -->
+
 ```ruby
 require "csv"
 
 CSV.foreach("data.csv", headers: true) do |row|
-  puts "Name: #{row['name']}, Age doubled: #{row['age'].to_i * 2}"
+  name = row.fetch("name")
+  age = row.fetch("age").to_i
+  doubled_age = age * 2
+
+  puts "Name: #{name}, Age doubled: #{doubled_age}"
 end
 ```
 
 This script extracts data from a CSV file, transforms the age, and loads it to the console.
 
+<!-- TODO: sample output -->
+
 ## 1. Meet Ruby's IO
 
 Ruby uses an [IO class](https://docs.ruby-lang.org/en/master/IO.html) to handle input/output, think of it as a stream of data. [File](https://docs.ruby-lang.org/en/master/File.html) is a subclass of `IO`, so everything you do with files uses the same foundation Ruby uses for console input and output.
 
+<!-- TODO: explain this better -->
 <aside class="tip">
   <code>puts</code> and <code>gets</code> are shorthand for working with Ruby's `STDOUT` (output stream) and `STDIN` (input stream).
 </aside>
 
 ## 2. Reading a File
 
-Open a file with `File.open` and pass in a block. Ruby will automatically close the file when the block ends.
+Open a file with [File.open](https://docs.ruby-lang.org/en/master/File.html#method-c-open) and pass in a block. Ruby will automatically close the file when the block ends.
 
 ```ruby
-File.open("example.txt", "r") do |file|
+File.open("example.txt") do |file|
   file.each_line do |line|
     puts line
   end
@@ -88,15 +101,15 @@ end
 
 ### Why this works
 
-- `"r"` means "read mode."
 - `file.each_line` loops through each line without loading the entire file into memory. Handle large files efficiently by reading line by line.
 
 ## 3. Writing to a File
 
-You can also create or append to files:
+You can also create or append to files. You can pass in the `mode` as the second argument to [File.open](https://docs.ruby-lang.org/en/master/File.html#method-c-open).
 
-- `"w"` overwrites
-- `"a"` appends
+- `"r"`: read
+- `"w"`: write
+- `"a"`: append
 
 ```ruby
 File.open("log.txt", "a") do |file|
@@ -223,6 +236,7 @@ File.open("/dev/tty", "r") do |keyboard|
 end
 ```
 
+<!-- TODO: add photo https://en.wikipedia.org/wiki/Teletype_Model_33#/media/File:Altair_8800_and_Model_33_ASR_Teletype.jpg -->
 <aside class="tip">
   "tty" stands for "teletypewriter". In early computing programs talked to users using "teletypes", basically typewriters connected to computers.
 </aside>
@@ -261,4 +275,4 @@ In this project, you will write Ruby programs that leverage these I/O objects. T
 <!-- TODO: The role of streams (STDIN, STDOUT, STDERR). -->
 <!-- TODO: Rescue Errno::ENOENT and handle gracefully -->
 <!-- TODO: OptionParser -->
-<!-- TODO: Guarding input -->
+<!-- TODO: Guarding input (+ return out of main object to exit) -->
